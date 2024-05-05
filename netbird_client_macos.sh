@@ -17,6 +17,7 @@ then
             exit 0
         else
             echo "Netbird is not at version $requiredVersion - Will Upgrade"
+            echo "Current version is: $(/usr/local/bin/netbird version)"
             install=1
         fi
     fi
