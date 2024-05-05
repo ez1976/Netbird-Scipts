@@ -1,7 +1,7 @@
 
 # Define the required version
 $requiredVersion = "0.27.4"
-netbird_domain="yout.netbird.domain"
+$netbird_domain = "connect.qwilt.com"
 $netbird_device_port = "33073"
 $netbird_web_port = "443"
 
@@ -9,7 +9,7 @@ $netbird_web_port = "443"
 function InstallNetbird {
     # Add installation logic here
     echo uninstalling netbird
-        tskill netbird-ui
+        tskill netbird-ui > $null 2>&1
         Stop-Service -Name "NetBird" > $null 2>&1
         # Get the ProductCode of Netbird
         $ProductCode = (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*" | Where-Object { $_.DisplayName -eq "Netbird" }).PSChildName
@@ -166,7 +166,7 @@ if (-not (Get-Command netbird -ErrorAction SilentlyContinue)) {
             Write-Host "Netbird version is $requiredVersion, Ignoring"
         } else {
             Write-Host "Netbird version is not $requiredVersion, reinstalling"
-            
+            Write-Host "Netbird Current Version is:" $netbirdVersion
             # Call the installation function
             InstallNetbird
         }
