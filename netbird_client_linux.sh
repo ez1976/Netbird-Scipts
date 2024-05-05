@@ -1,7 +1,7 @@
 #!/bin/bash
 install=
 requiredVersion="0.27.4"
-netbird_domain="yout.netbird.domain"
+netbird_domain="connect.qwilt.com"
 netbird_device_port="33073"
 netbird_web_port="443"
 
@@ -17,7 +17,8 @@ else
         then 
             echo "Netbird is already at $requiredVersion - ignoring"
         else
-            echo "Netbird needs to be reinstalled since it is the wrong version"
+            echo "Netbird version is not $requiredVersion, reinstalling"
+            echo "Current version is: $(/usr/bin/netbird version)"
             /usr/bin/netbird service down  > /dev/null 2>&1
             /usr/bin/netbird service stop  > /dev/null 2>&1
             /usr/bin/netbird service uninstall  > /dev/null 2>&1
@@ -66,4 +67,3 @@ sed -i "s|app.netbird.io:443|$netbird_domain:$netbird_web_port|g" /etc/netbird/c
 /usr/bin/netbird service start   > /dev/null 2>&1
 
 fi # finished installing and configuring the client
-
