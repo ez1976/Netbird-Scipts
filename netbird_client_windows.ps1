@@ -70,30 +70,31 @@ function InstallNetbird {
 
         #create the custom script to run
         @'
-        # Define the path to the Netbird executable
-        $programPath = "C:\Program Files\Netbird\netbird-ui.exe"
+@echo off
+REM Define the path to the Netbird executable
+set "programPath=C:\Program Files\Netbird\netbird-ui.exe"
 
-        # Check if the program is already running
-        $runningProcess = Get-Process | Where-Object {$_.MainModule.FileName -eq $programPath}
-
-        if ($runningProcess) {
-            # If the program is already running, display a message box
-            #msg * "Netbird is already running"
-            netbird up
-        } else {
-            # If the program is not running, start it
-            Start-Process -FilePath $programPath
-            netbird up
-        }
-'@ | Set-Content -Path "C:\ProgramData\Netbird\netbird-custom.ps1" -Encoding UTF8
+REM Check if the program is already running
+tasklist /FI "IMAGENAME eq netbird-ui.exe" 2>NUL | find /I /N "netbird-ui.exe">NUL
+if "%ERRORLEVEL%"=="0" (
+    REM If the program is already running, display a message
+    echo Netbird is already running
+    goto :startNetbird
+) else (
+    REM If the program is not running, start it
+    start "" "%programPath%"
+    :startNetbird
+    netbird up
+)
+'@ | Set-Content -Path "C:\ProgramData\Netbird\netbird-ui-qwilt.bat" -Encoding UTF8
+Remove-Item -Path "C:\ProgramData\Netbird\*.ps1" -Force -ErrorAction SilentlyContinue
 
         #create net netbird shortcut file
                 # Define the path to the shortcut file
         $shortcutPath = "C:\ProgramData\Microsoft\Windows\Start Menu\NetBird.lnk"
 
         # Define the target path and arguments
-        $targetPath = "C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe"
-        $arguments = "-ExecutionPolicy Bypass -File ""C:\ProgramData\Netbird\netbird-custom.ps1"""
+        $targetPath = "C:\ProgramData\Netbird\netbird-ui-qwilt.bat"
 
         # Define the start-in directory
         $startIn = "C:\Program Files\Netbird"
