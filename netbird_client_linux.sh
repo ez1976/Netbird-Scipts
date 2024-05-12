@@ -25,6 +25,7 @@ else
             dnf remove netbird netbird-ui -y > /dev/null 2>&1
             apt remove netbird netbird-ui -y > /dev/null 2>&1
             rm -rf /etc/netbird /usr/local/bin/netbird /usr/bin/netbird > /dev/null 2>&1
+            install=1
         fi #end of netbird version test
     else
         echo "Netbird client is connected at the moment, Ignoring"
