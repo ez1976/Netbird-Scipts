@@ -10,7 +10,7 @@ then
     echo "Netbird is missing, installing it now"
     install=1
 else
-    if  [[ "$(/usr/bin/netbird status 2>/dev/null | grep Management | grep -oc Disconnected )" -ge 1 ]]
+    if  [[ "$(/usr/bin/netbird status 2>/dev/null | grep Management | grep -oc Disconnected )" -ge 1 ]] || [[ "$( /usr/bin/netbird status 2>/dev/null | grep -c YOUR_MANAGEMENT_URL)" -ge 1 ]]
     then
         echo "Netbird is disconnected or not installed, checking if $requiredVersion is installed"
         if [[ "$(netbird version)" == "$requiredVersion" ]]
