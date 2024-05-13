@@ -1,6 +1,6 @@
 
 # Define the required version
-$requiredVersion = "0.27.4"
+$requiredVersion = "0.27.6"
 $netbird_domain = "your.netbird.domain"
 $netbird_device_port = "33073"
 $netbird_web_port = "443"
