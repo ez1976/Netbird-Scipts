@@ -18,14 +18,10 @@ else
         then 
             echo "Netbird is already at $requiredVersion - ignoring"
         else
-            echo "Netbird version is not $requiredVersion, reinstalling"
             echo "Current version is: $(/usr/bin/netbird version)"
-            /usr/bin/netbird service down  > /dev/null 2>&1
+            echo "Netbird version is not $requiredVersion - Upgrading/Downgrading"
             /usr/bin/netbird service stop  > /dev/null 2>&1
-            /usr/bin/netbird service uninstall  > /dev/null 2>&1
-            dnf remove netbird netbird-ui -y > /dev/null 2>&1
-            apt remove netbird netbird-ui -y > /dev/null 2>&1
-            rm -rf /etc/netbird /usr/local/bin/netbird /usr/bin/netbird > /dev/null 2>&1
+            killall -9 netbird-ui  > /dev/null 2>&1
             install=1
         fi #end of netbird version test
     else
@@ -60,13 +56,14 @@ then
     fi # end of netbird client based on OS version
 
 /usr/bin/netbird service stop  > /dev/null 2>&1
-/usr/bin/netbird service uninstall  > /dev/null 2>&1
 killall -9 netbird-ui  > /dev/null 2>&1
 sed -i "s|api.wiretrustee.com:443|$netbird_domain:$netbird_device_port|g" /etc/netbird/config.json
 sed -i "s|api.netbird.io:443|$netbird_domain:$netbird_device_port|g" /etc/netbird/config.json
 sed -i "s|app.netbird.io:443|$netbird_domain:$netbird_web_port|g" /etc/netbird/config.json
 /usr/bin/netbird service install  > /dev/null 2>&1
 /usr/bin/netbird service start   > /dev/null 2>&1
+logged_in_user=$(w | grep -i pts | awk '{print $1}')
+display=$(w -hs | grep eyalz | grep ':' | awk '{print $3}')
+sudo -u $logged_in_user DISPLAY=$display netbird-ui &
 
 fi # finished installing and configuring the client
-
