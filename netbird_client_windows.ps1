@@ -11,6 +11,18 @@ function InstallNetbird {
     echo Installing/Upgrading netbird
     tskill netbird-ui > $null 2>&1
     Stop-Service -Name "NetBird" > $null 2>&1
+    # Get the ProductCode of Netbird
+    $ProductCode = (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*" | Where-Object { $_.DisplayName -eq "Netbird" }).PSChildName
+
+    if ($ProductCode) {
+        # Run the uninstaller
+        Write-Host "Uninstalling Netbird..."
+        Start-Process -FilePath "msiexec.exe" -ArgumentList "/x $ProductCode /qn" -Wait > $null 2>&1
+        Write-Host "Netbird has been uninstalled."
+    } else {
+        Write-Host "Netbird is not installed on this system."
+    }
+
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
     (New-Object System.Net.WebClient).DownloadFile("https://github.com/netbirdio/netbird/releases/download/v${requiredVersion}/netbird_installer_${requiredVersion}_windows_amd64.msi", "$env:TEMP/Netbird.msi")
@@ -185,3 +197,4 @@ if (-not (Get-Command netbird -ErrorAction SilentlyContinue)) {
         Write-Host "Netbird is connected at the moment, ignoring"
     }
 }
+
