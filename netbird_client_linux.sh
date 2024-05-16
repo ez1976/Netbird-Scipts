@@ -1,6 +1,6 @@
 #!/bin/bash
 install=
-requiredVersion="0.27.6"
+requiredVersion="0.27.7"
 netbird_domain="connect.qwilt.com"
 netbird_device_port="33073"
 netbird_web_port="443"
