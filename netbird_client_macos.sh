@@ -1,6 +1,6 @@
 #!/bin/bash
 install=
-requiredVersion="0.27.6"
+requiredVersion="0.27.7"
 netbird_domain="your.netbird.domain"
 netbird_device_port="33073"
 netbird_web_port="443"
@@ -16,35 +16,29 @@ then
             echo "Netbird is already at $requiredVersion - ignoring"
             exit 0
         else
-            echo "Netbird is not at version $requiredVersion - Will Upgrade"
             echo "Current version is: $(/usr/local/bin/netbird version)"
-            install=1
+            echo "Netbird is not at version $requiredVersion - Will Upgrade/Downgrade"
+            install=upgrade
         fi
     fi
 else
-    install=1
+    install=install
 fi
 
-if [[ $install -eq 1 ]]
+if [[ "$install" == "upgrade" ]]
 then
-    echo "Nerbird is not installed or Wrong Version"
-    echo "Removing Netbird if exist"
-    killall -9 netbird-ui
-    /usr/local/bin/netbird down
-    /usr/local/bin/netbird service stop
-    /usr/local/bin/netbird service uninstall
-    if [[ -d /Applications/NetBird.app ]]; then rm -rf /Applications/NetBird.app;fi
-    if [[ -d "/Applications/Netbird UI.app" ]]; then rm -rf "/Applications/Netbird UI.app";fi
-    rm -rf /Library/LaunchDaemons/netbird.plist
-    rm -rf /etc/netbird /usr/local/bin/netbird
-
+    killall -9 netbird-ui   > /dev/null 2>&1
+    /usr/local/bin/netbird down   > /dev/null 2>&1
+    /usr/local/bin/netbird service stop   > /dev/null 2>&1
     cd /tmp
-    rm -rf /tmp/netbird*
+    rm -rf /tmp/netbird*   > /dev/null 2>&1
     echo getting netbird Application from S3 bucket
     curl --silent -o /tmp/netbird.zip https://storage.googleapis.com/qwilt-installs/netbird_app.zip
     cd /tmp
     unzip -o netbird.zip -d /
-
+fi
+if [[ "$install" == "upgrade" ]] || [[ "$install" == "install" ]]
+then
     # Check CPU type
     cpu_type=$(uname -m)
     echo "CPU Type: $cpu_type"
@@ -69,15 +63,15 @@ then
     echo  Get the currently logged-in user #
     logged_in_user=$(stat -f "%Su" /dev/console)
     echo Run a command as the logged-in user: $logged_in_user
-    /usr/local/bin/netbird service stop
+    /usr/local/bin/netbird service stop   > /dev/null 2>&1
     sleep 3
-    /usr/local/bin/netbird service start
+    /usr/local/bin/netbird service start   > /dev/null 2>&1
     sudo -u "$logged_in_user" open -g "/Applications/NetBird.app"
     sleep 3
     echo updating config file and restarting
-    /usr/local/bin/netbird service stop
-    killall -9 netbird-ui
-    killall -9 netbird
+    /usr/local/bin/netbird service stop  > /dev/null 2>&1
+    killall -9 netbird-ui  > /dev/null 2>&1
+    killall -9 netbird  > /dev/null 2>&1
     sleep 5
     /usr/bin/sed -i '' "s|api.netbird.io:443|$netbird_domain:$netbird_device_port|g" /etc/netbird/config.json
     /usr/bin/sed -i '' "s|api.wiretrustee.com:443|$netbird_domain:$netbird_device_port|g" /etc/netbird/config.json
@@ -87,5 +81,5 @@ then
     sudo -u "$logged_in_user" open -g "/Applications/NetBird.app"
     sleep 5
     /bin/cat /etc/netbird/config.json
-fi 
+fi
 dscacheutil -flushcache; sudo killall -HUP mDNSResponder
