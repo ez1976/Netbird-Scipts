@@ -110,6 +110,29 @@ Remove-Item -Path "C:\ProgramData\Netbird\*.ps1" -Force -ErrorAction SilentlyCon
     Set-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer EnableAutoTray 0
     # Get the currently logged-in user session
     $currentUserSession = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
+    #set netbird-ui icon to always show
+    # Define the registry path to search
+    $registryPath = "HKCU:\Control Panel\NotifyIconSettings"
+
+    # Get all subkeys under the registry path
+    $subKeys = Get-ChildItem -Path $registryPath -ErrorAction SilentlyContinue
+
+    if ($subKeys) {
+        foreach ($subKey in $subKeys) {
+            # Get the item properties for each subkey
+            $item = Get-ItemProperty -Path $subKey.PSPath
+
+            # Check if the ExecutablePath value contains "netbird-ui"
+            if ($item.ExecutablePath -like "*netbird-ui*") {
+                # Update IsPromoted value to 1
+                Set-ItemProperty -Path $subKey.PSPath -Name "IsPromoted" -Value 1
+                Write-Host "Found 'netbird-ui' in ExecutablePath under $($subKey.Name). IsPromoted value updated to 1."
+                break  # Stop searching once found
+            }
+        }
+    } else {
+        Write-Host "No subkeys found under the specified registry path."
+    }
 
     # Extract the username from the session information
     $username = $currentUserSession -replace ".*\\"
