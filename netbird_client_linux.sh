@@ -2,7 +2,7 @@
 install=
 requiredVersion="0.28.3"
 minimalVersion="0.28.0"
-netbird_domain="remote.qwilt.com"
+netbird_domain="your domain"
 netbird_device_port="33073"
 netbird_web_port="443"
 random_port=$((20000 + RANDOM % 10001))
